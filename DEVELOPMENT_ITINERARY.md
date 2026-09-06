@@ -1,7 +1,9 @@
 # Daylight development itinerary
 
-**Status:** working roadmap  
-**Baseline:** `ed0de9f` on `main`, 6 September 2026  
+**Status:** working roadmap
+
+**Baseline:** `ed0de9f` on `main`, 6 September 2026
+
 **Principle:** make one risk-reducing change at a time, prove it, then add product scope.
 
 Daylight is already a usable dependency-free browser planner. Development should preserve that strength: no account, no backend, no build step, and no opaque framework unless evidence shows that one is necessary.
