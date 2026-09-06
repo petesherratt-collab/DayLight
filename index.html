@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="A simple, private day-out itinerary planner." />
+    <title>Daylight — Day-out planner</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#">Daylight</a>
+      <p>Make a good day fit.</p>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">A simple day-out planner</p>
+          <h1 id="page-title">Plan the day,<br /><em>keep the breathing room.</em></h1>
+          <p class="intro">Build a practical itinerary, compare ways to travel, check the weather and keep an eye on total cost. Your plan stays in this browser.</p>
+        </div>
+
+        <div class="plan-details card">
+          <label>
+            Plan name
+            <input id="plan-name" type="text" maxlength="60" value="A lovely day out" />
+          </label>
+          <label>
+            Date
+            <input id="plan-date" type="date" />
+          </label>
+          <label>
+            Starting point
+            <input id="starting-point" type="text" maxlength="80" placeholder="e.g. Central Station" />
+          </label>
+          <label>
+            Day-out diameter
+            <span class="unit-input"><input id="trip-diameter" type="number" min="1" max="100" step="1" value="5" /><span>miles</span></span>
+            <span class="field-hint">Measured across a circle centred on your starting point.</span>
+          </label>
+        </div>
+      </section>
+
+      <section class="explore card" aria-labelledby="explore-heading">
+        <div class="explore-copy">
+          <p class="eyebrow">Map, weather & travel</p>
+          <h2 id="explore-heading">Keep the day within reach</h2>
+          <p>Plot your stops, check the forecast and see whether each one sits inside your chosen diameter.</p>
+          <button class="button primary compact" id="refresh-insights" type="button">Update map & weather</button>
+          <p id="map-status" class="helper-text">Add a starting point and stops, then update.</p>
+          <div class="route-options" aria-label="Open whole-day directions">
+            <span>Whole-day route</span>
+            <button type="button" data-route-mode="transit">Public transport</button>
+            <button type="button" data-route-mode="driving">Car</button>
+            <button type="button" data-route-mode="bicycling">Bicycle</button>
+            <button type="button" data-route-mode="walking">Walking</button>
+          </div>
+          <div id="weather-advice" class="weather-advice">
+            <span class="weather-icon" aria-hidden="true">◌</span>
+            <div><strong>Weather advice</strong><p>Choose a date and update to get practical advice.</p></div>
+          </div>
+        </div>
+        <div id="trip-map" class="trip-map" role="region" aria-label="Map of planned stops">
+          <div class="map-placeholder"><span>⌖</span><p>Your route will appear here</p></div>
+        </div>
+      </section>
+
+      <section class="discovery card" aria-labelledby="discovery-heading">
+        <div class="discovery-heading">
+          <div>
+            <p class="eyebrow">Find nearby places</p>
+            <h2 id="discovery-heading">Mapped places, with a little leeway</h2>
+            <p>Browse permanent places recorded in OpenStreetMap, including options up to 22% beyond your core area.</p>
+          </div>
+          <p class="privacy-note">OpenStreetMap is contacted only when you search or use your location.</p>
+        </div>
+
+        <form id="explore-form" class="explore-form">
+          <label>
+            Area or starting point
+            <input id="explore-area" type="search" maxlength="120" placeholder="e.g. Greenwich, London" required />
+          </label>
+          <label>
+            Show me
+            <select id="explore-category">
+              <option value="food">Food &amp; drink</option>
+              <option value="attractions">Attractions</option>
+              <option value="outdoors">Parks &amp; outdoors</option>
+              <option value="shopping">Shopping</option>
+            </select>
+          </label>
+          <label>
+            Core radius
+            <select id="explore-radius">
+              <option value="804">½ mile</option>
+              <option value="1609" selected>1 mile</option>
+              <option value="3219">2 miles</option>
+            </select>
+          </label>
+          <label>
+            Who is going?
+            <select id="explore-party">
+              <option value="solo">1 person</option>
+              <option value="couple">Couple</option>
+              <option value="small-group">Small group · 3–5 people</option>
+              <option value="family">Family</option>
+              <option value="older">Older visitor or couple</option>
+              <option value="large-group">Large group</option>
+              <option value="celebration-group">Celebration group</option>
+            </select>
+          </label>
+          <label>
+            Search reach
+            <select id="explore-duration">
+              <option value="nearby">Prefer closer options</option>
+              <option value="wider">Include options farther out</option>
+            </select>
+            <span class="field-hint">This changes discovery ordering only; the itinerary plans one day.</span>
+          </label>
+          <div class="explore-actions">
+            <button class="button primary" type="submit">Find places</button>
+            <button class="button secondary" id="use-location" type="button">Use my location</button>
+          </div>
+        </form>
+
+        <aside class="events-explainer" aria-label="Live event coverage">
+          <strong>Looking for what’s on?</strong>
+          <span>Daylight does not currently have a live events or ticketing feed. Results are places, not concerts, exhibitions, markets, or other date-specific events. Where OpenStreetMap provides a venue website or opening hours, we show them so you can verify current details.</span>
+        </aside>
+        <div id="explore-status" class="explore-status" role="status">Search an area to see nearby places. Community-maintained opening hours and contact details may be missing or outdated; verify them with the venue.</div>
+        <div id="explore-results" class="explore-results hidden">
+          <div id="options-map" class="options-map" aria-label="Map of nearby places"></div>
+          <div class="options-panel">
+            <div class="options-legend">
+              <span><i class="legend-dot inside"></i>Inside core area</span>
+              <span><i class="legend-dot fringe"></i>Within the extra 22%</span>
+            </div>
+            <ol id="option-list" class="option-list"></ol>
+          </div>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <aside class="activity-panel card" aria-labelledby="activity-heading">
+          <div class="section-heading">
+            <p class="eyebrow">Add a stop</p>
+            <h2 id="activity-heading">Activity details</h2>
+          </div>
+
+          <form id="activity-form">
+            <input id="activity-id" type="hidden" />
+            <label>
+              Place or activity
+              <input id="activity-name" type="text" maxlength="80" placeholder="Museum, lunch, a walk…" required />
+            </label>
+            <label>
+              Address or location <span class="optional">for maps</span>
+              <input id="activity-location" type="text" maxlength="120" placeholder="e.g. Tate Modern, London" />
+            </label>
+            <div class="two-columns">
+              <label>
+                Start time
+                <input id="start-time" type="time" value="10:00" required />
+              </label>
+              <label>
+                Starts on
+                <select id="start-day">
+                  <option value="0">Plan day</option>
+                  <option value="1">Next day</option>
+                </select>
+              </label>
+            </div>
+            <div class="two-columns">
+              <label>
+                Duration
+                <select id="duration">
+                  <option value="30">30 minutes</option>
+                  <option value="45">45 minutes</option>
+                  <option value="60" selected>1 hour</option>
+                  <option value="90">1 hour 30</option>
+                  <option value="120">2 hours</option>
+                  <option value="180">3 hours</option>
+                  <option value="240">4 hours</option>
+                </select>
+              </label>
+              <label>
+                Travel before
+                <select id="travel-time">
+                  <option value="0">None</option>
+                  <option value="10">10 minutes</option>
+                  <option value="15" selected>15 minutes</option>
+                  <option value="30">30 minutes</option>
+                  <option value="45">45 minutes</option>
+                  <option value="60">1 hour</option>
+                  <option value="90">1 hour 30</option>
+                </select>
+              </label>
+            </div>
+            <label>
+              Estimated cost
+              <span class="money-input"><span>£</span><input id="cost" type="number" min="0" max="100000" step="0.01" value="0" /></span>
+            </label>
+            <label>
+              Category
+              <select id="category">
+                <option>Attraction</option>
+                <option>Food & drink</option>
+                <option>Outdoors</option>
+                <option>Shopping</option>
+                <option>Travel</option>
+                <option>Other</option>
+              </select>
+            </label>
+            <label>
+              Get there by
+              <select id="travel-mode">
+                <option value="transit">Public transport</option>
+                <option value="driving">Car</option>
+                <option value="bicycling">Bicycle</option>
+                <option value="walking">Walking</option>
+              </select>
+            </label>
+            <label>
+              Notes <span class="optional">optional</span>
+              <textarea id="notes" maxlength="240" rows="3" placeholder="Booking details, what to bring, address…"></textarea>
+            </label>
+            <div class="form-actions">
+              <button class="button primary" type="submit"><span id="submit-label">Add to the day</span></button>
+              <button class="button quiet hidden" id="cancel-edit" type="button">Cancel edit</button>
+            </div>
+          </form>
+        </aside>
+
+        <section class="itinerary-panel" aria-labelledby="itinerary-heading">
+          <div class="itinerary-header">
+            <div>
+              <p class="eyebrow">Your itinerary</p>
+              <h2 id="itinerary-heading">The shape of the day</h2>
+            </div>
+            <div class="top-actions">
+              <label class="rank-control">Display order
+                <select id="rank-order">
+                  <option value="time">Itinerary</option>
+                  <option value="cost-asc">Lowest cost</option>
+                  <option value="cost-desc">Highest cost</option>
+                </select>
+                <span class="field-hint">Routes and clash checks stay chronological.</span>
+              </label>
+              <button class="button secondary" id="sample-plan" type="button">Try an example</button>
+              <button class="button quiet" id="clear-plan" type="button">Clear</button>
+            </div>
+          </div>
+
+          <div class="summary" aria-label="Plan summary">
+            <div><strong id="stop-count">0</strong><span>stops</span></div>
+            <div><strong id="day-span">—</strong><span>day span</span></div>
+            <div><strong id="total-cost">£0.00</strong><span>estimated</span></div>
+          </div>
+
+          <div id="notice" class="notice hidden" role="status"></div>
+          <div class="recovery-actions">
+            <button class="button quiet" id="open-recovery" type="button">Recovery copies</button>
+            <button class="button secondary hidden" id="use-repaired-plan" type="button">Use repaired plan</button>
+          </div>
+          <section id="recovery-manager" class="recovery-manager hidden" aria-labelledby="recovery-heading">
+            <div class="recovery-heading">
+              <div><strong id="recovery-heading">Recovery copies</strong><span>Restore, download, or remove saved fallback versions.</span></div>
+              <button id="close-recovery" type="button" aria-label="Close recovery copies">Close</button>
+            </div>
+            <div id="recovery-list"></div>
+          </section>
+          <div id="storage-conflict" class="storage-conflict hidden" role="alert">
+            <span>This plan changed in another tab. Choose which version to keep.</span>
+            <div>
+              <button id="load-external-plan" type="button">Load newer plan</button>
+              <button id="keep-local-plan" type="button">Keep this tab’s plan</button>
+            </div>
+          </div>
+          <div id="undo-notice" class="undo-notice hidden" role="status">
+            <span id="undo-message"></span>
+            <button id="undo-action" type="button">Undo</button>
+          </div>
+          <ol id="itinerary-list" class="itinerary-list"></ol>
+
+          <div id="empty-state" class="empty-state">
+            <div class="sun-mark" aria-hidden="true">☀</div>
+            <h3>Your day is wide open</h3>
+            <p>Add a first stop, or load the example to see how the planner handles a full day.</p>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <footer>
+      <p>Saved automatically on this device · Map and weather updates use online services</p>
+    </footer>
+
+    <template id="activity-template">
+      <li class="activity-card">
+        <div class="timeline-time">
+          <strong data-field="start"></strong>
+          <span data-field="end"></span>
+        </div>
+        <div class="timeline-line"><span></span></div>
+        <article>
+          <div class="activity-title-row">
+            <div>
+              <span class="category-pill" data-field="category"></span>
+              <h3 data-field="name"></h3>
+            </div>
+            <div class="item-actions">
+              <button type="button" data-action="edit" aria-label="Edit activity">Edit</button>
+              <button type="button" data-action="delete" aria-label="Delete activity">Remove</button>
+            </div>
+          </div>
+          <p class="travel-note" data-field="travel"></p>
+          <p class="location-note hidden" data-field="location"></p>
+          <p class="activity-notes hidden" data-field="notes"></p>
+          <div class="activity-meta">
+            <span data-field="duration"></span>
+            <span data-field="cost"></span>
+            <span data-field="cost-rank"></span>
+            <a data-field="directions" target="_blank" rel="noopener">Directions</a>
+          </div>
+          <p class="conflict hidden" data-field="conflict"></p>
+        </article>
+      </li>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>
